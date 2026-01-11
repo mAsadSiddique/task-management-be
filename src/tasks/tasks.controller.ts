@@ -6,7 +6,12 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateTaskDto, TaskResponseDto } from './dtos';
 import { TasksService } from './tasks.service';
 
@@ -27,7 +32,12 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  @ApiOperation({ summary: 'Get all tasks' })
+  @ApiOkResponse({
+    description: 'The tasks have been successfully retrieved.',
+    type: [TaskResponseDto],
+  })
+  async findAll() {
+    return await this.tasksService.findAll();
   }
 }

@@ -23,7 +23,19 @@ export class TasksService {
     }
   }
 
-  findAll() {
-    return this.prisma.task.findMany();
+  async findAll() {
+    try {
+      const tasks = await this.prisma.task.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASKS_FETCHED, {
+        tasks,
+      });
+    } catch (error) {
+      this.sharedService.sendError(error, this.findAll.name);
+    }
   }
 }
