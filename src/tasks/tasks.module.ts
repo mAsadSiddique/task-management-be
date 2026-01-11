@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TasksController } from './tasks.controller';
-import { TasksService } from './tasks.service';
+import { TaskController } from './tasks.controller';
+import { TaskService } from './tasks.service';
 import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [SharedModule],
-  controllers: [TasksController],
-  providers: [TasksService],
+  controllers: [TaskController],
+  providers: [TaskService],
 })
 export class TasksModule {}

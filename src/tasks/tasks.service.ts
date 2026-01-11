@@ -6,20 +6,21 @@ import { ExceptionService } from 'src/shared/exception.service';
 import { RESPONSE_MESSAGES } from 'src/utils/enums';
 
 @Injectable()
-export class TasksService {
+export class TaskService {
   constructor(
     private prisma: PrismaService,
     private readonly sharedService: SharedService,
     private readonly exceptionService: ExceptionService,
   ) {}
 
-  async createTask(data: CreateTaskDto) {
+  async createTask(args: CreateTaskDto) {
     try {
-      const task = await this.prisma.task.create({ data });
+      const task = await this.prisma.task.create({ data: args });
 
-      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASK_CREATED, {
+      return this.sharedService.sendResponse(
+        RESPONSE_MESSAGES.TASK_CREATED,
         task,
-      });
+      );
     } catch (error) {
       this.sharedService.sendError(error, this.createTask.name);
     }
@@ -33,9 +34,10 @@ export class TasksService {
         },
       });
 
-      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASKS_FETCHED, {
+      return this.sharedService.sendResponse(
+        RESPONSE_MESSAGES.TASKS_FETCHED,
         tasks,
-      });
+      );
     } catch (error) {
       this.sharedService.sendError(error, this.findAll.name);
     }
@@ -53,9 +55,10 @@ export class TasksService {
         );
       }
 
-      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASK_FETCHED, {
+      return this.sharedService.sendResponse(
+        RESPONSE_MESSAGES.TASK_FETCHED,
         task,
-      });
+      );
     } catch (error) {
       this.sharedService.sendError(error, this.findOne.name);
     }
@@ -90,9 +93,10 @@ export class TasksService {
         data,
       });
 
-      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASK_UPDATED, {
+      return this.sharedService.sendResponse(
+        RESPONSE_MESSAGES.TASK_UPDATED,
         task,
-      });
+      );
     } catch (error) {
       this.sharedService.sendError(error, this.updateTask.name);
     }
@@ -114,7 +118,7 @@ export class TasksService {
         where: { id },
       });
 
-      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASK_DELETED, {});
+      return this.sharedService.sendResponse(RESPONSE_MESSAGES.TASK_DELETED);
     } catch (error) {
       this.sharedService.sendError(error, this.deleteTask.name);
     }

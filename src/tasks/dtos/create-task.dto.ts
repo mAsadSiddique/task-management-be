@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-
-export enum TaskStatus {
-  Pending = 'Pending',
-  InProgress = 'InProgress',
-  Done = 'Done',
-}
+import { IsEnum, IsNotEmpty, Length } from 'class-validator';
+import { TaskStatus } from 'src/utils/enums';
 
 export class CreateTaskDto {
   @ApiProperty({
@@ -14,18 +9,22 @@ export class CreateTaskDto {
     minLength: 1,
     maxLength: 100,
   })
-  @IsString()
   @IsNotEmpty()
-  @MaxLength(100, { message: 'Title must be at most 100 characters long' })
+  @Length(1, 100, {
+    message: 'Title must be between 1 and 100 characters long',
+  })
   title: string;
 
   @ApiProperty({
     description: 'Detailed description of the task',
     example: 'Write comprehensive documentation for the task management API',
+    minLength: 1,
     maxLength: 300,
   })
-  @IsString()
-  @MaxLength(300, { message: 'Description must be at most 300 characters long' })
+  @IsNotEmpty()
+  @Length(1, 300, {
+    message: 'Description must be between 1 and 300 characters long',
+  })
   description: string;
 
   @ApiProperty({
@@ -33,6 +32,9 @@ export class CreateTaskDto {
     enum: TaskStatus,
     example: TaskStatus.Pending,
   })
-  @IsEnum(TaskStatus)
+  @IsNotEmpty()
+  @IsEnum(TaskStatus, {
+    message: `status should be a valid value from ${Object.values(TaskStatus).join(', ')}`,
+  })
   status: TaskStatus;
 }

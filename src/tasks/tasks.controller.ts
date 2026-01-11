@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -19,12 +20,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateTaskDto, TaskResponseDto, UpdateTaskDto } from './dtos';
-import { TasksService } from './tasks.service';
+import { TaskService } from './tasks.service';
 
-@ApiTags('tasks')
-@Controller('tasks')
-export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+@ApiTags('Task')
+@Controller('task')
+export class TaskController {
+  constructor(private readonly taskService: TaskService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -34,7 +35,7 @@ export class TasksController {
     type: TaskResponseDto,
   })
   async create(@Body() createTaskDto: CreateTaskDto) {
-    return await this.tasksService.createTask(createTaskDto);
+    return await this.taskService.createTask(createTaskDto);
   }
 
   @Get()
@@ -44,7 +45,7 @@ export class TasksController {
     type: [TaskResponseDto],
   })
   async findAll() {
-    return await this.tasksService.findAll();
+    return await this.taskService.findAll();
   }
 
   @Get(':id')
@@ -59,11 +60,14 @@ export class TasksController {
     description: 'The task has been successfully retrieved.',
     type: TaskResponseDto,
   })
+  @ApiBadRequestResponse({
+    description: 'Invalid UUID format.',
+  })
   @ApiNotFoundResponse({
     description: 'Task not found.',
   })
-  async findOne(@Param('id') id: string) {
-    return await this.tasksService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.taskService.findOne(id);
   }
 
   @Patch(':id')
@@ -81,13 +85,16 @@ export class TasksController {
   })
   @ApiBadRequestResponse({
     description:
-      'No fields provided for update. Please provide at least one field (title, description, or status) to update.',
+      'Invalid UUID format or no fields provided for update. Please provide at least one field (title, description, or status) to update.',
   })
   @ApiNotFoundResponse({
     description: 'Task not found.',
   })
-  async update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return await this.tasksService.updateTask(id, updateTaskDto);
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
+    return await this.taskService.updateTask(id, updateTaskDto);
   }
 
   @Delete(':id')
@@ -102,10 +109,13 @@ export class TasksController {
   @ApiOkResponse({
     description: 'The task has been successfully deleted.',
   })
+  @ApiBadRequestResponse({
+    description: 'Invalid UUID format.',
+  })
   @ApiNotFoundResponse({
     description: 'Task not found.',
   })
-  async remove(@Param('id') id: string) {
-    return await this.tasksService.deleteTask(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.taskService.deleteTask(id);
   }
 }
